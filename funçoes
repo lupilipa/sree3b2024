@@ -1,39 +1,74 @@
-view 
-	adm 
-		ger_esp_equip
-			cad_esp_equip_config.php
-			cad_esp_equip.php
-			exc_esp_equip­_conf.php
-			exc_esp_equip.php
-			geren_esp_equip.php
+<?php
 
-				ger_func
-					cad_func_confi.php
-					cad_func.php
-					exc_func_conf.php
-					exc_func.php
-					geren_func.php
+class Usuario{
 
-						ger_rel
-							filtros_rel.php
-							geren_rel.php
+    public function autenticarUsuario($credencial, $senha){
+        $pdo = new PDO("mysql:host=localhost;dbname=proj_reserva", "root", "");
+        $consulta = "select * from usuarios where :credencial = credencial and :senha = senha";
+        $consultafeita = $pdo->prepare($consulta);
+        $consultafeita->bindValue(":credencial", $credencial);
+        $consultafeita->bindValue(":senha", $senha);
+        $consultafeita->execute();
+        $x = $consultafeita->rowCount();
+        if($x>0){
+            session_start();
+            foreach ($consultafeita as $value) {
+                $value['credencial'] = $_SESSION['credencial'];
+                $value['tipo'] = $_SESSION['tipo'];
+                if($_SESSION['tipo'] = "admin"){
+                    header('location:../view/adm/ger_reserva/menu_admin.php');
+                    
+                } else{
+                    header('location:../view/funcionario/menu_funci.php');
+                }
 
-ger_reserva
-	cad_reserva_conf.php
-	cad_reserva_dados.php
-	cad_reserva_erro.php
-	exc_reserva_conf.php
-	exc_reserva.php
-	menu_admin.php
+                } } else {
+                    header('location:../view/funcionario/reg_reserva/erro_login.php');
+       
+    }
 
-		funcionario
-			ger_rel_func
-				filtros_rel.php
+}
 
-					reg_reserva
-						reg_reserva_config.php
-						reg_reserva_dados.php
-						reg_resreva_erro.php
-						reg_reserva.php
-						menu_funci.php
-						
+    public function listarAluno(){
+        $pdo = new PDO("mysql:host=localhost; dbname=registro_atraso","root","");
+        $consulta = "select * from aluno order by ano, turma;";
+        $consultafeita = $pdo->prepare($consulta);
+        $consultafeita->execute();
+            echo '<center>
+            <table border=1>
+            <tr>
+                <th colspan=4>
+                Relatório de Alunos
+                </th>
+                </tr>
+            <tr>
+                <th>credencial</th>
+                <th>Ano</th>                           
+                <th>Turma</th>
+            </tr>'
+            ;
+
+        foreach ($consultafeita as $value) {
+           echo '<tr><td>'.$value['credencial'] .'</td>';
+           echo  '<td>'.$value['turma'].'</td>';
+           echo  '<td>'.$value['ano'] .'</tr></td>' ;
+        }
+        echo '</table></center>';
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+?>
